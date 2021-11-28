@@ -13,7 +13,7 @@ function Monster(src, canvas) {
     monster.w = 115;
     monster.h = 115;
     monster.vy = 0;
-    monster.g = 0.10;
+    monster.g = 0.20;
     monster.src = src;
     monster.img = null;
     monster.frame = 0;

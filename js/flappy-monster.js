@@ -76,12 +76,25 @@ FlappyMonster.prototype.bindEvents = function() {
         switch (game.currentState) {
             case GAME_OVER:
                 if (event.keyCode === KEY_CODE.R) {
-                    console.log(event.keyCode);
+                    game.reset();
                     game.currentState = GAME_PLAYING;
                 }
                 break;
         }
     })
+}
+
+FlappyMonster.prototype.reset = function() {
+    // Base
+    var game = this;
+
+    //reset states 
+    game.gameScore.start = new Date();
+    game.gameScore.score = 0;
+    game.wallFactory.walls = [];
+    game.monster.x = 115;
+    game.monster.y = 115;
+
 }
 
 FlappyMonster.prototype.start = function() {
@@ -153,6 +166,48 @@ FlappyMonster.prototype.drawGamePlayingScreen = function() {
 
     //draw monster
     game.monster.draw();
+
+    //check collision
+    game.checkCollisions();
+}
+
+FlappyMonster.prototype.checkCollisions = function() {
+    // Base
+    var game = this;
+
+    var walls = game.wallFactory.walls;
+
+    for (var i = 0; i < walls.length; i++) {
+        if (game.isCollided(game.monster, walls[i])) {
+            game.currentState = GAME_OVER;
+        }
+    }
+}
+
+FlappyMonster.prototype.isCollided = function(monster, wall) {
+    // Base
+    var game = this;
+    var isCollided = true;
+
+    //monster coordinates
+    var monsterTop = game.monster.y;
+    var monsterBottom = game.monster.y + game.monster.h;
+    var monsterRight = game.monster.x + game.monster.w;
+    var monsterLeft = game.monster.x;
+
+    //wall coordinates
+    var wallTop = wall.y + wall.h + wall.gap; //top of lower wall
+    var wallBottom = wall.y + wall.h; //bottom of upper wall
+    var wallRight = wall.x + wall.w;
+    var wallLeft = wall.x;
+
+    if ((monsterBottom < wallTop && monsterTop > wallBottom) || (monsterLeft > wallRight) || (monsterRight < wallLeft)) {
+        isCollided = false;
+    }
+
+
+
+    return isCollided;
 }
 
 FlappyMonster.prototype.drawWalls = function() {
@@ -217,6 +272,9 @@ FlappyMonster.prototype.drawGameOverScreen = function() {
 
     // Text
     game.context.fillStyle = 'white';
+    game.context.font = '36px Arial';
+    game.context.fillText('Your Score : ' + game.gameScore.score, game.canvas.width / 2 - 180, game.canvas.height / 2 - 100);
+
     game.context.font = '36px Arial';
     game.context.fillText('GAME OVER', game.canvas.width / 2 - 100, game.canvas.height / 2);
 
