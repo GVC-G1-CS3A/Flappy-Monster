@@ -31,7 +31,7 @@ function FlappyMonster(canvas) {
     game.createObjects();
 }
 
-FlappyMonster.prototype.createObjects = function () {
+FlappyMonster.prototype.createObjects = function() {
     //base
     var game = this;
 
@@ -48,9 +48,13 @@ FlappyMonster.prototype.createObjects = function () {
     //Wall Factory
     game.wallFactory = new WallFactory(game.canvas);
     game.wallFactory.generateWalls();
+
+    //monster
+    game.monster = new Monster('images/fluppymonstersample.png', game.canvas);
+
 }
 
-FlappyMonster.prototype.bindEvents = function () {
+FlappyMonster.prototype.bindEvents = function() {
     //base
     var game = this;
 
@@ -63,7 +67,7 @@ FlappyMonster.prototype.bindEvents = function () {
                 game.currentState = GAME_PLAYING;
                 break;
             case GAME_PLAYING:
-                //DRAW GAME_PLAYING SCREEN
+                game.monster.vy = -1 * game.velocity;
                 break;
         }
     });
@@ -71,7 +75,7 @@ FlappyMonster.prototype.bindEvents = function () {
     window.addEventListener('keydown', function(event) {
         switch (game.currentState) {
             case GAME_OVER:
-                if(event.keyCode === KEY_CODE.R) {
+                if (event.keyCode === KEY_CODE.R) {
                     console.log(event.keyCode);
                     game.currentState = GAME_PLAYING;
                 }
@@ -80,18 +84,18 @@ FlappyMonster.prototype.bindEvents = function () {
     })
 }
 
-FlappyMonster.prototype.start = function () {
+FlappyMonster.prototype.start = function() {
     // Base
     var game = this;
 
     // Start Game
-    window.requestAnimationFrame(function () {
+    window.requestAnimationFrame(function() {
         game.runGameLoop();
 
     });
 };
 
-FlappyMonster.prototype.runGameLoop = function () {
+FlappyMonster.prototype.runGameLoop = function() {
     // Base
     var game = this;
 
@@ -111,12 +115,12 @@ FlappyMonster.prototype.runGameLoop = function () {
             break;
     }
 
-    window.requestAnimationFrame(function () {
+    window.requestAnimationFrame(function() {
         game.runGameLoop();
     });
 };
 
-FlappyMonster.prototype.drawInitialScreen = function () {
+FlappyMonster.prototype.drawInitialScreen = function() {
     // Base
     var game = this;
 
@@ -131,7 +135,7 @@ FlappyMonster.prototype.drawInitialScreen = function () {
     game.context.fillText('Click to Start!', game.canvas.width / 2 - 100, game.canvas.height / 2)
 }
 
-FlappyMonster.prototype.drawGamePlayingScreen = function () {
+FlappyMonster.prototype.drawGamePlayingScreen = function() {
     // Base
     var game = this;
 
@@ -140,14 +144,15 @@ FlappyMonster.prototype.drawGamePlayingScreen = function () {
 
     // Draw Background
     game.animateBackground();
-      
+
     // Draw Score
     game.gameScore.draw();
 
     // Draw Walls
     game.drawWalls();
 
-    console.log(game.wallFactory.walls);
+    //draw monster
+    game.monster.draw();
 }
 
 FlappyMonster.prototype.drawWalls = function() {
@@ -157,7 +162,7 @@ FlappyMonster.prototype.drawWalls = function() {
     // Draw Walls
     var walls = game.wallFactory.walls;
 
-    for(var i = 0; i < walls.length; i++){
+    for (var i = 0; i < walls.length; i++) {
         walls[i].draw();
         walls[i].x = walls[i].x - game.velocity;
     }
@@ -172,15 +177,15 @@ FlappyMonster.prototype.removeExtraWalls = function() {
     // Draw Walls
     var walls = game.wallFactory.walls;
 
-    for(var i = 0; i < walls.length; i++){
-        if(walls[i].x + walls[i].w < 0){
+    for (var i = 0; i < walls.length; i++) {
+        if (walls[i].x + walls[i].w < 0) {
             // remove
             walls.shift();
         }
     }
 }
 
-FlappyMonster.prototype.animateBackground = function () {
+FlappyMonster.prototype.animateBackground = function() {
     // Base
     var game = this;
 
@@ -201,7 +206,7 @@ FlappyMonster.prototype.animateBackground = function () {
     game.background2.x = game.background2.x - game.velocity;
 }
 
-FlappyMonster.prototype.drawGameOverScreen = function () {
+FlappyMonster.prototype.drawGameOverScreen = function() {
     // Base
     var game = this;
 
